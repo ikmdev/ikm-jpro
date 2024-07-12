@@ -16,7 +16,8 @@ Follow the steps below to build and run Komet with JPro on your local machine:
 ```bash
 mvn -f application jpro:run
 ```
-4. A web browser page should automatically open and you should see Komet application running on `http://localhost:8080/`.
+4. The default web browser should automatically open and you should see Komet application running, otherwise just
+navigate to `http://localhost:8080` in your web browser.
 5. To stop the application, press `Ctrl + C` in the terminal window where the application is running.
 6. To run the application again, repeat step 6.
 7. To build the application for deployment, run the following command:
