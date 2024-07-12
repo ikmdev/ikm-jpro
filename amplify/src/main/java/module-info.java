@@ -78,6 +78,7 @@ module dev.ikm.komet.amplify {
     opens dev.ikm.komet.amplify.lidr.results to javafx.fxml, org.carlfx.cognitive;
     exports dev.ikm.komet.amplify.lidr.results;
 
+    opens dev.ikm.komet.amplify;
 
     // TODO a temporary export screen for next gen ui.
     opens dev.ikm.komet.amplify.export;

@@ -75,6 +75,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.ZoneId;
@@ -107,6 +108,8 @@ public class JProApp extends RouteApp {
     private static final boolean IS_DESKTOP = !IS_BROWSER && PlatformUtils.isDesktop();
     private static final boolean IS_MAC = !IS_BROWSER && PlatformUtils.isMac();
 
+    private static Module frameworkModule;
+    private static Module amplifyModule;
     private static Stage classicKometStage;
     private static KometPreferencesStage kometPreferencesStage;
     private final List<JournalController> journalControllersList = new ArrayList<>();
@@ -117,6 +120,14 @@ public class JProApp extends RouteApp {
     public void init() {
         LOG.info("Starting Komet");
         LoadFonts.load();
+
+        frameworkModule = ModuleLayer.boot()
+                .findModule("dev.ikm.komet.framework")
+                .orElseThrow(() -> new RuntimeException("Framework module not found"));
+
+        amplifyModule = ModuleLayer.boot()
+                .findModule("dev.ikm.komet.amplify")
+                .orElseThrow(() -> new RuntimeException("Amplify module not found"));
 
         // get the instance of the event bus
         amplifyEventBus = EvtBusFactory.getInstance(EvtBus.class);
@@ -508,17 +519,29 @@ public class JProApp extends RouteApp {
     }
 
     private String getKometCssLocation() {
-        String frameworkDir = WORKING_DIR.replace("/application", "/framework/src/main/resources");
-        String kometCssSourcePath = frameworkDir + "/" + KOMET_CSS_LOCATION;
-        File kometCssFile = new File(kometCssSourcePath);
-        return kometCssFile.toURI().toString();
+        URL cssUrl = frameworkModule.getClassLoader().getResource(KOMET_CSS_LOCATION);
+        if (cssUrl != null) {
+            System.out.println("Komet CSS file found: " + cssUrl);
+            return cssUrl.toExternalForm();
+        } else {
+            String frameworkDir = WORKING_DIR.replace("/application", "/framework/src/main/resources");
+            String kometCssSourcePath = frameworkDir + "/" + KOMET_CSS_LOCATION;
+            File kometCssFile = new File(kometCssSourcePath);
+            return kometCssFile.toURI().toString();
+        }
     }
 
     private String getAmplifyCssLocation() {
-        String amplifyDir = WORKING_DIR.replace("/application", "/amplify/src/main/resources");
-        String amplifyCssSourcePath = amplifyDir + "/" + AMPLIFY_CSS_LOCATION;
-        File amplifyCssFile = new File(amplifyCssSourcePath);
-        return amplifyCssFile.toURI().toString();
+        URL cssUrl = amplifyModule.getClassLoader().getResource(AMPLIFY_CSS_LOCATION);
+        if (cssUrl != null) {
+            System.out.println("Amplify CSS file found: " + cssUrl);
+            return cssUrl.toExternalForm();
+        } else {
+            String amplifyDir = WORKING_DIR.replace("/application", "/amplify/src/main/resources");
+            String amplifyCssSourcePath = amplifyDir + "/" + AMPLIFY_CSS_LOCATION;
+            File amplifyCssFile = new File(amplifyCssSourcePath);
+            return amplifyCssFile.toURI().toString();
+        }
     }
 
     private void handleEvent(ActionEvent actionEvent) {
