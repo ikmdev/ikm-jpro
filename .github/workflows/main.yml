@@ -1,0 +1,31 @@
+name: CI build
+
+# on push any branch
+on:
+  push:
+
+
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: publish build-parent with 1.42.0
+        run: |
+          git clone https://github.com/ikmdev/build-parent.git build-parent
+          cd build-parent
+          git checkout 3d647ceb48d0900d89b1121e8f0dabb4735cc482
+          sed -i 's/1.47.0/1.42.0/g' pom.xml
+          sed -i 's/1.47.0/1.42.0/g' java-parent/pom.xml
+          mvn clean install
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: compile
+        run: |
+          sed -i "s|CURRENTFOLDER|$(pwd)|g" pom.xml
+          mvn compile
