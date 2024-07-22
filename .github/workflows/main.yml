@@ -25,7 +25,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: compile
+      - name: install
         run: |
-          sed -i "s|CURRENTFOLDER|$(pwd)|g" pom.xml
-          mvn compile
+          mvn clean install
