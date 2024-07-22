@@ -60,6 +60,7 @@
     <properties>
         <jpro.version>2024.3.0</jpro.version>
         <jpro-platform.version>0.4.0</jpro-platform.version>
+        <local.repo.dir>${project.basedir}/../repo</local.repo.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tinkar-core.groupId>dev.ikm.tinkar</tinkar-core.groupId>
         <tinkar-core.version>1.51.0</tinkar-core.version>
@@ -93,7 +94,7 @@
     <repositories>
         <repository>
             <id>local-repo L1</id>
-            <url>file://CURRENTFOLDER/repo</url>
+            <url>file://${local.repo.dir}</url>
         </repository>
     </repositories>
     <dependencyManagement>
