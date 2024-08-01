@@ -109,8 +109,12 @@ public class SelectDataSourceController {
 
         propertySheet.setPropertyEditorFactory(new KometPropertyEditorFactory(null));
 
-        Platform.runLater(() ->
-                dataSourceChoiceBox.getSelectionModel().select(controllerOptions.get(1)));
+        controllerOptions.stream()
+                .filter(dataServiceController -> dataServiceController.controllerName().equals("Open SpinedArrayStore"))
+                .findFirst()
+                .ifPresentOrElse(dataServiceController -> dataSourceChoiceBox.getSelectionModel().select(dataServiceController),
+                        // If default data service is not found, select the first one on the choice box.
+                        () -> dataSourceChoiceBox.getSelectionModel().selectFirst());
     }
 
     void dataSourceChanged(ObservableValue<? extends DataServiceController<?>> observable,
