@@ -150,8 +150,10 @@ public class JProApp extends RouteApp {
 
     @Override
     public Route createRoute() {
-        Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
-                AlertStreams.getRoot().dispatch(AlertObject.makeError(e)));
+        if (firstRun) {
+            Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
+                    AlertStreams.getRoot().dispatch(AlertObject.makeError(e)));
+        }
 
         getStage().setTitle("KOMET Startup");
         getScene().getStylesheets().addAll(getKometCssLocation(), getAmplifyCssLocation());
@@ -180,15 +182,18 @@ public class JProApp extends RouteApp {
         });
 
         return Route.empty()
-                .and(get("/", request -> {
-                    if (App.state.get().ordinal() == AppState.RUNNING.ordinal()) {
-                        return Response.redirect(LANDING_PAGE_PATH);
-                    } else {
-                        return Response.redirect(SELECT_DATA_SOURCE_PAGE_PATH);
-                    }
-                }))
+                .when(request -> App.state.get() == AppState.RUNNING, Route.empty()
+                        .and(Route.redirect("/", LANDING_PAGE_PATH)))
+                .and(Route.redirect("", SELECT_DATA_SOURCE_PAGE_PATH))
+                .and(Route.redirect("/", SELECT_DATA_SOURCE_PAGE_PATH))
                 .path("/page", Route.empty()
-                        .and(get("/selectDataSource", request -> Response.node(selectDataSourcePage())))
+                        .and(get("/selectDataSource", request -> {
+                            if (App.state.get() == AppState.SELECT_DATA_SOURCE) {
+                                return Response.node(selectDataSourcePage());
+                            } else {
+                                return Response.redirect(LANDING_PAGE_PATH);
+                            }
+                        }))
                         .and(get("/landing", request -> Response.node(landingPage()))))
                 .filter(Filters.FullscreenFilter(true)); // uses the whole browser window
     }
@@ -355,7 +360,6 @@ public class JProApp extends RouteApp {
 
             journalStageWindow.showingProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    System.out.println("Stage is hidden.");
                     saveJournalWindowsToPreferences();
                     // call shutdown method on the controller
                     journalController.shutdown();

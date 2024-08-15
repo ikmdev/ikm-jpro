@@ -32,6 +32,7 @@ module dev.ikm.komet.application {
     requires jpro.webapi;
     requires one.jpro.platform.routing.core;
     requires one.jpro.platform.internal.util;
+    opens jpro.html; // Needed by the routing module
 
     // TODO Not happy that I have to specify these here... Can't dynamically add modules?
     requires dev.ikm.tinkar.provider.spinedarray;
