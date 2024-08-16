@@ -205,6 +205,20 @@
     <!--                <mainClassName>dev.ikm.komet.application/dev.ikm.komet.app.App</mainClassName>-->
                     <mainClassName>dev.ikm.komet.app.JProApp</mainClassName>
                     <useModuleSystem>true</useModuleSystem>
+                    <releasePlatforms> <!-- Sets the platforms to be included in the zip generated via jpro:release  -->
+                        <releasePlatform>linux</releasePlatform> <!-- includes linux x64 builds -->
+                        <releasePlatform>linux-aarch64</releasePlatform> <!-- includes linux aarch64 builds -->
+                    </releasePlatforms>
+                    <jproReleaseFiles>
+                        <JProReleaseFile>
+                            <inputFile>${project.basedir}/../docker/Dockerfile</inputFile>
+                            <outputFile>/</outputFile>
+                        </JProReleaseFile>
+                        <JProReleaseFile>
+                            <inputFile>${project.basedir}/../docker/docker-compose.yml</inputFile>
+                            <outputFile>/</outputFile>
+                        </JProReleaseFile>
+                    </jproReleaseFiles>
                     <JVMArgs>
                         <JVMArg>-Xmx16g</JVMArg>
                         <JVMArg>--add-opens</JVMArg>

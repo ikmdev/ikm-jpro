@@ -58,7 +58,7 @@
         <module>application</module>
     </modules>
     <properties>
-        <jpro.version>2024.3.1</jpro.version>
+        <jpro.version>2024.3.2-KOMET</jpro.version>
         <jpro-platform.version>0.4.0</jpro-platform.version>
         <local.repo.dir>${project.basedir}/../repo</local.repo.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

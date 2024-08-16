@@ -150,8 +150,10 @@ public class JProApp extends RouteApp {
 
     @Override
     public Route createRoute() {
-        Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
-                AlertStreams.getRoot().dispatch(AlertObject.makeError(e)));
+        if (firstRun) {
+            Thread.currentThread().setUncaughtExceptionHandler((t, e) ->
+                    AlertStreams.getRoot().dispatch(AlertObject.makeError(e)));
+        }
 
         getStage().setTitle("KOMET Startup");
         getScene().getStylesheets().addAll(getKometCssLocation(), getAmplifyCssLocation());
@@ -180,15 +182,18 @@ public class JProApp extends RouteApp {
         });
 
         return Route.empty()
-                .and(get("/", request -> {
-                    if (App.state.get().ordinal() == AppState.RUNNING.ordinal()) {
-                        return Response.redirect(LANDING_PAGE_PATH);
-                    } else {
-                        return Response.redirect(SELECT_DATA_SOURCE_PAGE_PATH);
-                    }
-                }))
+                .when(request -> App.state.get() == AppState.RUNNING, Route.empty()
+                        .and(Route.redirect("/", LANDING_PAGE_PATH)))
+                .and(Route.redirect("", SELECT_DATA_SOURCE_PAGE_PATH))
+                .and(Route.redirect("/", SELECT_DATA_SOURCE_PAGE_PATH))
                 .path("/page", Route.empty()
-                        .and(get("/selectDataSource", request -> Response.node(selectDataSourcePage())))
+                        .and(get("/selectDataSource", request -> {
+                            if (App.state.get() == AppState.SELECT_DATA_SOURCE) {
+                                return Response.node(selectDataSourcePage());
+                            } else {
+                                return Response.redirect(LANDING_PAGE_PATH);
+                            }
+                        }))
                         .and(get("/landing", request -> Response.node(landingPage()))))
                 .filter(Filters.FullscreenFilter(true)); // uses the whole browser window
     }
@@ -355,7 +360,6 @@ public class JProApp extends RouteApp {
 
             journalStageWindow.showingProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    System.out.println("Stage is hidden.");
                     saveJournalWindowsToPreferences();
                     // call shutdown method on the controller
                     journalController.shutdown();
@@ -452,6 +456,7 @@ public class JProApp extends RouteApp {
             }
         }
         classicKometStage = new Stage();
+        classicKometStage.initOwner(getStage());
 
         //Starting up preferences and getting configurations
         Preferences.start();
@@ -709,6 +714,7 @@ public class JProApp extends RouteApp {
 
         WindowSettings windowSettings = new WindowSettings(windowPreferences);
         Stage datasetStage = new Stage();
+        datasetStage.initOwner(getStage());
         FXMLLoader datasetPageLoader = ExportDatasetViewFactory.createFXMLLoaderForExportDataset();
         try {
             Pane datasetBorderPane = datasetPageLoader.load();
@@ -727,6 +733,7 @@ public class JProApp extends RouteApp {
         MenuItem exportMenuItem = new MenuItem("_Export Changesets...");
         exportMenuItem.setOnAction(event -> {
             Stage stage = new Stage();
+            stage.initOwner(getStage());
             JFXNode<Pane, ArtifactExportController2> jfxNode = FXMLMvvmLoader.make(
                     ArtifactExportController2.class.getResource("artifact-export2.fxml"));
             stage.setScene(new Scene(jfxNode.node()));
@@ -737,6 +744,7 @@ public class JProApp extends RouteApp {
 
     public void showWindowsAboutScreen() {
         Stage aboutWindow = new Stage();
+        aboutWindow.initOwner(getStage());
         Label kometLabel = new Label("Komet 1");
         kometLabel.setFont(new Font("Open Sans", 24));
         Label copyright = new Label("Copyright \u00a9 " + Year.now().getValue());
