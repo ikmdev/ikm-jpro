@@ -1,4 +1,8 @@
 # Komet With JPro
+
+### Team Ownership - Product Owner
+External Contributors.
+
 ## Getting Started
 Follow the instructions below to set up the local environment for Komet:
 
@@ -72,3 +76,10 @@ to `http://localhost:8080` if you are running the Docker container locally. If y
 remote server, replace `localhost` with the IP address of the server.
 
 Note: Komet requires sample data to operate with full functionality
+y
+
+## Issues and Contributions
+
+Technical and non-technical issues can be reported to the GitHub Issue Tracker.
+
+Contributions can be submitted via pull requests. Please check the [contribution guide](doc/how-to-contribute.md) for more details.
